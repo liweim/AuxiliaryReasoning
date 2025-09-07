@@ -1,9 +1,8 @@
-# GUI Grounding with Auxiliary Spatial Reasoning
+# How Auxiliary Reasoning Unleashes GUI Grounding in VLMs
 
-This repository contains the official implementation of the paper:  
-**"How Auxiliary Reasoning Unleashes GUI Grounding in VLMs"**
+This repository contains information and code of our paper: How Auxiliary Reasoning Unleashes GUI Grounding in VLMs
 
-## 📖 Abstract
+## 📖 Introduction
 
 Graphical user interface (GUI) grounding is a fundamental task for building GUI agents. However, general vision-language models (VLMs) struggle with this task due to a lack of specific optimization for GUI grounding. We identify a key gap: while VLMs exhibit significant latent grounding potential, as demonstrated by their performance in Pointing Game, they perform poorly when tasked with outputting explicit coordinates. To address this discrepancy and bypass the high data and annotation costs of current fine-tuning approaches, we propose three zero-shot auxiliary reasoning methods. By providing explicit spatial cues such as axes, grids, and labeled intersections as part of the input image, these methods enable VLMs to articulate their implicit spatial understanding capabilities. We evaluate these methods on four GUI grounding benchmarks across seven open-source
 and proprietary VLMs. The evaluation results demonstrate that the proposed methods substantially improve the performance.
