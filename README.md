@@ -1,6 +1,6 @@
 # How Auxiliary Reasoning Unleashes GUI Grounding in VLMs
 
-This repository contains information and code of our paper: How Auxiliary Reasoning Unleashes GUI Grounding in VLMs
+This repository contains information and code of our paper: How Auxiliary Reasoning Unleashes GUI Grounding in VLMs.
 
 ## 📖 Introduction
 
@@ -11,7 +11,7 @@ and proprietary VLMs. The evaluation results demonstrate that the proposed metho
 
 We propose three auxiliary reasoning methods to enhance the spatial understanding of VLMs:
 
-1.  **Coordinate Scaffold**: builds upon the existing Scaffold Prompting method\cite{lei2024scaffolding}. While the original Scaffold Prompting method labels the anchor points with row and column indices, our modification uses the actual corresponding $x,y$ coordinates of the anchor points within the image. 
+1.  **Coordinate Scaffold**: builds upon the existing Scaffold Prompting method. While the original Scaffold Prompting method labels the anchor points with row and column indices, our modification uses the actual corresponding $x,y$ coordinates of the anchor points within the image. 
 
 2.  **Axis-Grid Scaffold**: enhances a model's spatial perception by adding a structured grid overlay. It places coordinate scales at 100-unit intervals on the image's four edges and a corresponding grid across the image. 
 
