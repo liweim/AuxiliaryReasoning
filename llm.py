@@ -305,6 +305,7 @@ class VLMAPI:
         """
         self.api_key = "your-api-key"
         self.url = "api-url"
+        
         self.model_name = model_name
         self.temperature = temperature
         self.max_tokens = max_tokens

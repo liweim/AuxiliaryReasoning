@@ -10,37 +10,33 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Default parameters configuration to avoid repetition
 DEFAULT_PARAMS = {
-    "resume": True,
-    "rephrase": False,
-    "add_grid": False,
-    "grid_size": 100,
-    "with_origin_chart": False,
-    "add_axis": False,
-    "axis_position": "bottom_left",
-    "color": "red",
-    "use_scaffold": False,
-    "scaffold_mode": "default",
-    "run_som": False,
-    "run_attention": False,
-    "rm_spikes": False,
-    "use_all_layers": False,
-    "run_all": False,
-    "verbose": True,
-    "debug": False
+    "resume": True,                    # Resume from previous checkpoint if available
+    "add_grid": False,                 # Overlay grid lines on the image for visual guidance
+    "grid_size": 100,                  # Size of grid lines in pixels
+    "with_origin_chart": False,        # Include original chart/image alongside processed version
+    "add_axis": False,                 # Add coordinate axis to the image
+    "axis_position": "bottom_left",    # Position of the coordinate axis (bottom_left, bottom_right, top_left, top_right and all_sides)
+    "color": "red",                    # Color for grid lines
+    "use_scaffold": False,             # Enable scaffold prompting technique
+    "scaffold_mode": "default",        # Scaffold mode: default, only_dots and coordinate
+    "run_attention": False,            # Run attention mechanism analysis
+    "use_all_layers": False,           # Use all model layers for analysis
+    "run_all": False,                  # Process entire dataset instead of subset
+    "verbose": True,                   # Enable verbose output logging
+    "debug": False                     # Enable debug mode with additional information
 }
 
 # Default parameters for grid mark runner
 DEFAULT_GRID_MARK_PARAMS = {
-    "resume": True,
-    "coord_type": "center",
-    "num_grid": 5,
-    "num_zone_in": 1,
-    "color": "red",
-    "with_origin_chart": False,
-    "enlarge": False,
-    "run_all": False,
-    "verbose": True,
-    "debug": False
+    "resume": True,                    # Resume from previous checkpoint if available
+    "num_grid": 5,                     # Number of grid divisions per dimension (5x5 grid)
+    "num_zone_in": 1,                  # Number of zone-in iterations for refinement
+    "color": "red",                    # Color for grid marks and labels
+    "with_origin_chart": False,        # Include original chart/image alongside grid-marked version
+    "enlarge": False,                  # Enlarge the zone-in area for better visibility
+    "run_all": False,                  # Process entire dataset instead of subset
+    "verbose": True,                   # Enable verbose output logging
+    "debug": False                     # Enable debug mode with additional information
 }
 
 def merge_params(default_params, **kwargs):
@@ -70,31 +66,22 @@ class ScreenSpotRunner(BaseRunner):
 
     def load_data(self):
         """Load ScreenSpot dataset"""
-        if self.rephrase:
-            data_path = f"{self.folder}/meta_rephrased_claude.json"
-        else:
-            data_path = f"{self.folder}/meta.json"
+        data_path = f"{self.folder}/meta.json"
         with open(data_path, "r", encoding="utf-8") as f:
             if self.run_all:
-                data = json.load(f)
+                data = json.load(f)  # Load entire dataset
                 # data = data[:len(data)//10]
             else:
-                data = json.load(f)[:100]
+                data = json.load(f)[:100]  # Load only first 100 samples for testing
         return data
 
     def get_prompt_template(self, **kwargs):
         """Get ScreenSpot specific prompt template"""
         item = kwargs.get("item")
-        if self.rephrase:
-            instruction = item["rephrased_instruction"]
-            prompt = f"Locate the UI element: {instruction}\nThe output coordinate should be in the format: ```json\n(x, y)\n```, for example: ```json\n(100, 100)\n```."
-        else:
-            instruction = item["instruction"]
-            prompt = f"""In the image, where should I click if I want to {instruction}?\nThe output coordinate should be in the format: ```json\n(x, y)\n```, for example: ```json\n(100, 100)\n```."""
-        if self.name.startswith("llava"):
-            visualize_text = f" {instruction}?"
-        else:
-            visualize_text = f" {instruction}"
+        instruction = item["instruction"]
+        prompt = f"""In the image, where should I click if I want to {instruction}?\nThe output coordinate should be in the format: ```json\n(x, y)\n```, for example: ```json\n(100, 100)\n```."""
+        
+        visualize_text = f" {instruction}"
         return prompt, visualize_text
 
     def extract_item_info(self, item):
@@ -108,6 +95,7 @@ class ScreenSpotRunner(BaseRunner):
         """Load ScreenSpot image"""
         filename = item["filename"]
         img_path = f"{self.folder}/images/{filename}"
+        # Fallback to root folder if image not found in images subfolder
         if not os.path.exists(img_path):
             img_path = f"{self.folder}/{filename}"
         return Image.open(img_path).convert("RGB")
@@ -182,14 +170,18 @@ class ScreenSpotGridMarkRunner(BaseGridMarkRunner):
 
 
 def get_class_score(qa_data, save_path):
+    """Calculate and display accuracy scores by device class (mobile, pc, web)"""
     all_cls = ["mobile", "pc", "web"]
     answer_data = json.load(open(save_path, "r", encoding="utf-8"))["data"]
+    
+    # Map each item ID to its device class based on filename prefix
     id_cls = {}
     for qa in qa_data:
         filename = qa["filename"]
-        cls = filename.split("_")[0]
+        cls = filename.split("_")[0]  # Extract device class from filename
         id_cls[qa["id"]] = cls
 
+    # Group scores by device class
     cls_score = {cls: [] for cls in all_cls}
     for id, item in answer_data.items():
         if id not in id_cls:
@@ -197,6 +189,8 @@ def get_class_score(qa_data, save_path):
         cls = id_cls[id]
         score = item["score"] if item["score"] is not None else 0
         cls_score[cls].append(score)
+    
+    # Calculate and print mean accuracy for each class
     for cls in cls_score:
         num = len(cls_score[cls])
         mean_score = sum(cls_score[cls]) / num
@@ -242,6 +236,7 @@ def run_grid_mark(
 
 
 def run_all(dataset, models, methods, debug=False):
+    """Run evaluation on all specified models and methods"""
     run_all = True
     folder = f"{ROOT}/{dataset}"
     save_folder = f"results/{dataset}"
