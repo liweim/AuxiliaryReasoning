@@ -304,7 +304,7 @@ class VLMAPI:
             max_tokens: Maximum tokens in response
         """
         self.api_key = os.getenv("OPENAI_API_KEY")
-        self.url = "https://api.openai.com/v1/chat/completions"
+        self.url = os.getenv("OPENAI_API_URL", "https://api.openai.com/v1/chat/completions")
         
         self.model_name = model_name
         self.temperature = temperature
@@ -445,33 +445,3 @@ class DirectLocalLLMAPI:
             
         except Exception as e:
             raise e
-
-if __name__ == "__main__":
-    vlm = AbstractLLM("gemma-3-12b")
-    image_path = "data/5/origin.png"
-    image = Image.open(image_path).convert("RGB")
-    image_path2 = "data/5/grid.png"
-    image2 = Image.open(image_path2).convert("RGB")
-    question = "What is the difference between the two images?"
-    messages = [
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": question},
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": encode_image(image)
-                    },
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": encode_image(image2)
-                    },
-                },
-            ],
-        }
-    ]
-    out = vlm(messages)
-    print("Response:", out)
