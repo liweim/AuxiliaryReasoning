@@ -303,8 +303,8 @@ class VLMAPI:
             temperature: Sampling temperature (0 = deterministic)
             max_tokens: Maximum tokens in response
         """
-        self.api_key = "your-api-key"
-        self.url = "api-url"
+        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.url = "https://api.openai.com/v1/chat/completions"
         
         self.model_name = model_name
         self.temperature = temperature

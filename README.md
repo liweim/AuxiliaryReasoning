@@ -35,9 +35,9 @@ We conduct a comprehensive comparison of the performance of three baseline metho
     cd AuxiliaryReasoning
     ```
 
-2.  Create a conda environment with Python 3.9.21:
+2.  Create a conda environment with Python 3.9:
     ```bash
-    conda create -n AuxiliaryReasoning python=3.9.21
+    conda create -n AuxiliaryReasoning python=3.9
     conda activate AuxiliaryReasoning
     ```
 
@@ -47,8 +47,9 @@ We conduct a comprehensive comparison of the performance of three baseline metho
     ```
 
 4.  Configure API keys:
-    - Open `llm.py` and locate the `VLMAPI` class
-    - Add your API keys and endpoints for the VLMs you plan to use
+    ```bash
+    export OPENAI_API_KEY='changme'
+    ```
 
 ## 📁 Dataset Preparation
 
